@@ -1,0 +1,73 @@
+seed: 1
+num_worker: 0
+work_dir: ./work_dir/SkateFormer_b/
+
+phase: train
+
+# feeder
+feeder: feeders.feeder_uav.Feeder
+train_feeder_args:
+  data_path: ./data/uav-human/3d/train_joint.npy
+  label_path: ./data/uav-human/3d/train_label.npy 
+  split: train
+  data_type: b
+  debug: False
+  window_size: 256
+  p_interval: [0.5, 1]
+  aug_method: a123489
+  intra_p: 0.5
+  inter_p: 0.2
+  thres: 64
+  uniform: True
+  partition: False
+
+test_feeder_args:
+  data_path: ./data/uav-human/3d/test_joint_A.npy
+  label_path: ./data/uav-human/3d/test_label_A.npy
+  split: test
+  data_type: b
+  window_size: 256
+  p_interval: [0.95]
+  thres: 64
+  uniform: True
+  partition: False
+  debug: False
+
+# model
+model: model.SkateFormer.SkateFormer_
+model_args:
+  num_classes: 155
+  num_people: 2
+  num_points: 17
+  kernel_size: 7
+  num_heads: 32
+  attn_drop: 0.5
+  head_drop: 0.0
+  rel: True
+  drop_path: 0.2
+  type_1_size: [ 16, 17 ]
+  type_2_size: [ 16, 2 ]
+  type_3_size: [ 16, 17 ]
+  type_4_size: [ 16, 2 ]
+  mlp_ratio: 4.0
+  index_t: True
+
+#optim
+optimizer: AdamW
+weight_decay: 0.1
+lr_scheduler: cosine
+base_lr: 1e-3
+min_lr: 1e-5
+warmup_lr: 1e-7
+warmup_prefix: False
+warm_up_epoch: 25
+
+# training
+device: [0]
+batch_size: 16
+test_batch_size: 16
+num_epoch: 140
+nesterov: True
+grad_clip: True
+grad_max: 1.0
+loss_type: LSCE
